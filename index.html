@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mortgage strategy comparison</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="page-header">
+  <h1>Mortgage strategy comparison</h1>
+  <p class="lede">Two loans, the same total cash. Any money one strategy does not put into the house or the payment goes into an index fund.</p>
+</header>
+
+<main>
+  <section id="verdict" class="verdict" aria-live="polite">
+    <h2 id="verdict-title"></h2>
+    <p id="verdict-detail"></p>
+    <p id="verdict-breakeven"></p>
+    <p id="verdict-crossover"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="inputs-title">
+    <div class="panel-head">
+      <h2 id="inputs-title">Inputs</h2>
+      <button type="button" id="copy-link" class="button">Copy link</button>
+    </div>
+
+    <fieldset class="group">
+      <legend>Shared settings</legend>
+      <div class="grid">
+        <label>House price ($)<input type="number" data-key="price" step="10000" min="10000"></label>
+        <label>Home appreciation (% / yr)<input type="number" data-key="appreciation" step="0.1"></label>
+        <label>Sell or stop at year (1-30)<input type="number" data-key="horizon" step="1" min="1" max="30"></label>
+        <label>Investment return (% / yr)<input type="number" data-key="investReturn" step="0.1"></label>
+        <label>Tax on investment gains (%)<input type="number" data-key="gainsTax" step="0.1"></label>
+        <label>Selling costs (% of home value)<input type="number" data-key="sellingCost" step="0.1"></label>
+        <label>Marginal income tax rate (%)<input type="number" data-key="marginalRate" step="0.5"></label>
+        <label>Standard deduction ($)<input type="number" data-key="standardDeduction" step="100"></label>
+        <label>Other itemized deductions ($ / yr)<input type="number" data-key="otherItemized" step="500"></label>
+        <label>Deductible loan cap ($)<input type="number" data-key="loanCap" step="10000"></label>
+        <label>Conforming loan limit ($)<input type="number" data-key="conformingLimit" step="1000"></label>
+        <label class="check"><input type="checkbox" data-key="deduct"> Deduct mortgage interest</label>
+      </div>
+    </fieldset>
+
+    <div class="loans">
+      <fieldset class="group loan-a" data-loan="A">
+        <legend><span class="swatch swatch-a"></span>Loan A</legend>
+        <div class="grid">
+          <label>Name<input type="text" data-key="loanA.label" maxlength="30"></label>
+          <label>Down payment ($)<input type="number" data-key="loanA.down" step="10000" min="0"></label>
+          <label>Term
+            <select data-key="loanA.term"><option>15</option><option>20</option><option>30</option></select>
+          </label>
+          <label>Interest rate (%)<input type="number" data-key="loanA.rate" step="0.125" min="0"></label>
+        </div>
+        <p class="loan-summary"><span class="badge" data-out="badgeA"></span> <span data-out="summaryA"></span></p>
+      </fieldset>
+
+      <fieldset class="group loan-b" data-loan="B">
+        <legend><span class="swatch swatch-b"></span>Loan B</legend>
+        <div class="grid">
+          <label>Name<input type="text" data-key="loanB.label" maxlength="30"></label>
+          <label>Down payment ($)<input type="number" data-key="loanB.down" step="10000" min="0"></label>
+          <label>Term
+            <select data-key="loanB.term"><option>15</option><option>20</option><option>30</option></select>
+          </label>
+          <label>Interest rate (%)<input type="number" data-key="loanB.rate" step="0.125" min="0"></label>
+        </div>
+        <p class="loan-summary"><span class="badge" data-out="badgeB"></span> <span data-out="summaryB"></span></p>
+      </fieldset>
+    </div>
+  </section>
+
+  <section aria-labelledby="results-title">
+    <h2 id="results-title">Results at the horizon</h2>
+    <div class="cards" id="cards"></div>
+    <p class="sanity" id="sanity"></p>
+  </section>
+
+  <section aria-labelledby="charts-title">
+    <h2 id="charts-title">Charts</h2>
+    <div class="charts">
+      <figure class="chart wide"><figcaption>Net worth if sold that year</figcaption><div class="canvas-box"><canvas id="chart-networth" role="img" aria-label="Net worth over time for both loans"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-split-a">Yearly payment split, Loan A</figcaption><div class="canvas-box"><canvas id="chart-split-a" role="img" aria-label="Yearly principal and interest for loan A"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-split-b">Yearly payment split, Loan B</figcaption><div class="canvas-box"><canvas id="chart-split-b" role="img" aria-label="Yearly principal and interest for loan B"></canvas></div></figure>
+      <figure class="chart"><figcaption>Loan balance</figcaption><div class="canvas-box"><canvas id="chart-balance" role="img" aria-label="Loan balance over time"></canvas></div></figure>
+      <figure class="chart"><figcaption>Investment portfolio (before tax)</figcaption><div class="canvas-box"><canvas id="chart-portfolio" role="img" aria-label="Portfolio value over time"></canvas></div></figure>
+    </div>
+  </section>
+
+  <details class="table-wrap">
+    <summary>Yearly values table</summary>
+    <div class="scroll"><table id="year-table"></table></div>
+  </details>
+
+  <section class="assumptions" aria-labelledby="assump-title">
+    <h2 id="assump-title">Assumptions</h2>
+    <p>Returns are a smooth yearly average. Each month, the cash not needed for the higher payment is invested; tax benefits are invested at year end. Selling costs and investment gains tax apply at the horizon.</p>
+    <p>Not modeled: market volatility and sequence of returns, PMI, closing costs and points, refinancing, inflation, liquidity (cash tied up in the house versus investments), and loan qualification or income limits.</p>
+  </section>
+</main>
+</body>
+</html>
