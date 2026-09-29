@@ -1,10 +1,10 @@
 // app.js - wires the inputs, the calculation library and the charts together.
 // Flow: read inputs -> params -> simulate -> render text, cards, table, charts.
 
-import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=10';
+import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=11';
 import {
   FIELDS, paramsFromQuery, paramsToQuery, toModelParams, getPath, setPath, cleanValue,
-} from './lib/params.js?v=10';
+} from './lib/params.js?v=11';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -146,13 +146,16 @@ function netWorthBreakdown(row, model) {
   const sellingCosts = row.homeValue * model.sellingCost;
   const gainsTax = row.portfolio - row.portfolioAfterTax;
   const gains = Math.max(0, row.portfolio - row.contributions);
+  const gainsTaxLabel = model.keepInvestments
+    ? 'Tax on gains (investments kept, none due)'
+    : `Tax on gains (${(model.gainsTax * 100).toFixed(1)}% of ${money(gains)})`;
   return [
     ['', `Home value (year ${row.year})`, row.homeValue, false],
     ['−', `Selling costs (${(model.sellingCost * 100).toFixed(1)}%)`, sellingCosts, false],
     ['−', 'Pay off remaining loan', row.balance, false],
     ['=', 'Home equity', row.homeEquity, true],
     ['', 'Investments (before tax)', row.portfolio, false],
-    ['−', `Tax on gains (${(model.gainsTax * 100).toFixed(1)}% of ${money(gains)})`, gainsTax, false],
+    ['−', gainsTaxLabel, gainsTax, false],
     ['=', 'Investments after tax', row.portfolioAfterTax, true],
     ['=', 'Net worth (equity + investments)', row.netWorth, true],
   ];

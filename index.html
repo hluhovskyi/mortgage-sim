@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mortgage strategy comparison</title>
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script type="module" src="app.js?v=10"></script>
+  <script type="module" src="app.js?v=11"></script>
 </head>
 <body>
 <header class="page-header">
@@ -68,6 +68,7 @@
       <div class="sub">
         <h3>Taxes</h3>
         <label class="check"><input type="checkbox" data-key="deduct"> Deduct mortgage interest on income taxes</label>
+        <label class="check"><input type="checkbox" data-key="keepInvestments"> Keep the investments (no gains tax at the horizon)</label>
         <div class="grid">
           <label>Tax on investment gains, %<input type="number" data-key="gainsTax" step="0.1"></label>
           <label>Income tax rate, %<input type="number" data-key="marginalRate" step="0.5"></label>
@@ -115,7 +116,7 @@
 
   <section class="assumptions" aria-labelledby="assump-title">
     <h2 id="assump-title">Assumptions</h2>
-    <p>Returns are a smooth yearly average. Each month, the cash not needed for the higher payment is invested; tax benefits are invested at year end. Selling costs and investment gains tax apply at the horizon.</p>
+    <p>Returns are a smooth yearly average. Each month, the cash not needed for the higher payment is invested; tax benefits are invested at year end. Selling costs apply at the horizon, and so does the tax on investment gains unless you keep the investments.</p>
     <p>Not modeled: market volatility and sequence of returns, PMI, closing costs and points, refinancing, inflation, liquidity (cash tied up in the house versus investments), and loan qualification or income limits.</p>
   </section>
 </main>

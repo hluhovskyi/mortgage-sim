@@ -123,3 +123,20 @@ test('toModelParams converts percent to decimals', () => {
   assert.equal(m.investReturn, 0.07);
   assert.equal(m.loanB.rate, 0.0675);
 });
+
+test('keeping investments skips the gains tax in every year', () => {
+  const sold = simulate(defaultModelParams);
+  const kept = simulate(withChanges({ keepInvestments: true }));
+  for (const row of kept.B.rows) assert.equal(row.portfolioAfterTax, row.portfolio);
+  const gainsTax = sold.B.final.portfolio - sold.B.final.portfolioAfterTax;
+  assert.ok(gainsTax > 0);
+  near(kept.B.final.netWorth, sold.B.final.netWorth + gainsTax, 1e-6);
+});
+
+test('keep-investments box: off by default, URL key ki, passed to the model', () => {
+  assert.equal(DEFAULTS.keepInvestments, false);
+  assert.match(paramsToQuery(DEFAULTS), /(^|&)ki=0(&|$)/);
+  const p = paramsFromQuery('?ki=1');
+  assert.equal(p.keepInvestments, true);
+  assert.equal(toModelParams(p).keepInvestments, true);
+});

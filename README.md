@@ -37,6 +37,7 @@ Unknown keys are ignored; invalid values fall back to the default; numbers are c
 | `y` | Horizon (sell or stop at year) | 30 | 1 - 40 (whole years) |
 | `r` | Investment return, % / yr, nominal | 7 | -20 - 40 |
 | `gt` | Tax on investment gains, % | 23.8 | 0 - 60 |
+| `ki` | Keep the investments at the horizon, no gains tax (1 or 0) | 0 | 0 or 1 |
 | `sc` | Selling costs, % of home value | 7 | 0 - 30 |
 | `ded` | Deduct mortgage interest (1 or 0) | 1 | 0 or 1 |
 | `mt` | Marginal income tax rate, % | 32 | 0 - 60 |
@@ -66,7 +67,8 @@ Monthly simulation, month 1 to horizon x 12.
    tax benefit = marginal rate x max(0, deductible + other itemized - max(standard deduction, other itemized)).
    The benefit is invested at the end of that year.
 5. **Horizon.** Home value = price x (1+appreciation)^years. Home equity (net) = home value x (1 - selling cost) - loan balance.
-   Portfolio after tax = value - gains tax x max(0, value - contributions). Net worth = home equity (net) + portfolio after tax.
+   Portfolio after tax = value - gains tax x max(0, value - contributions), or just value when "keep the investments"
+   is on (the house is sold but the investments are not, so no gains tax is due). Net worth = home equity (net) + portfolio after tax.
    Both loans are simply settled from sale proceeds; there is no refinancing.
 6. **Series.** Yearly snapshots (year 0..horizon) use the same formulas, as if sold that year.
 7. **Break-even.** Crossover years are where (net worth B - net worth A) changes sign. The break-even return is found by
