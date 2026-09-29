@@ -194,7 +194,7 @@ function crossoverPlugin(crossovers, labels) {
  * @param {object[]} datasets Chart.js datasets.
  * @param {object} [extra] Extra options: stacked (bool), plugins (array).
  */
-function makeChart(canvasId, type, years, datasets, { stacked = false, plugins = [], yMax } = {}) {
+function makeChart(canvasId, type, years, datasets, { stacked = false, plugins = [], yMax, hideLegend = false } = {}) {
   const ink = cssVar('--ink-2'), grid = cssVar('--grid');
   const chart = new Chart(document.getElementById(canvasId), {
     type,
@@ -208,7 +208,7 @@ function makeChart(canvasId, type, years, datasets, { stacked = false, plugins =
         y: { stacked, max: yMax, ticks: { color: ink, callback: (v) => compactFormat.format(v) }, grid: { color: grid } },
       },
       plugins: {
-        legend: { labels: { color: cssVar('--ink'), usePointStyle: true, boxWidth: 8 } },
+        legend: { display: !hideLegend, labels: { color: cssVar('--ink'), usePointStyle: true, boxWidth: 8 } },
         tooltip: {
           callbacks: {
             title: (items) => `Year ${items[0].label}`,
@@ -235,6 +235,15 @@ function splitSets(series, loanColor) {
   ];
 }
 
+/** Yearly stacked bars: money put in (gray) and growth on top (loan color). */
+function portfolioSets(series, loanColor) {
+  const growth = series.portfolio.map((value, i) => Math.max(0, value - series.contributions[i]));
+  return [
+    { label: 'Money put in', data: series.contributions, backgroundColor: cssVar('--neutral'), borderRadius: 0 },
+    { label: 'Growth', data: growth, backgroundColor: loanColor, borderRadius: 0 },
+  ];
+}
+
 function renderCharts(result, crossovers) {
   charts.splice(0).forEach((c) => c.destroy());
   const { series } = result;
@@ -253,7 +262,7 @@ function renderCharts(result, crossovers) {
   makeChart('chart-gap', 'bar', series.years, [{
     label: `${b} minus ${a}`, data: gap, borderRadius: 0,
     backgroundColor: gap.map((d) => (d >= 0 ? colorB : colorA)),
-  }], { plugins: [crossoverPlugin(crossovers, { A: a, B: b })] });
+  }], { plugins: [crossoverPlugin(crossovers, { A: a, B: b })], hideLegend: true });
 
   // Both split charts share one y-axis maximum so the bars are comparable.
   const yearlyTotal = (s) => Math.max(...s.yearPrincipal.map((p, i) => p + s.yearInterest[i]));
@@ -263,8 +272,14 @@ function renderCharts(result, crossovers) {
   makeChart('chart-split-a', 'bar', yearsFrom1, splitSets(series.A, colorA), { stacked: true, yMax: sharedMax });
   makeChart('chart-split-b', 'bar', yearsFrom1, splitSets(series.B, colorB), { stacked: true, yMax: sharedMax });
 
+  // Portfolio = money put in (cost basis) + growth on top (compounding). Shared y-axis.
+  const portfolioMax = Math.max(...series.A.portfolio, ...series.B.portfolio, 1) * 1.05;
+  $('#cap-port-a').textContent = `Investments, ${a}: money put in vs growth`;
+  $('#cap-port-b').textContent = `Investments, ${b}: money put in vs growth`;
+  makeChart('chart-port-a', 'bar', series.years, portfolioSets(series.A, colorA), { stacked: true, yMax: portfolioMax });
+  makeChart('chart-port-b', 'bar', series.years, portfolioSets(series.B, colorB), { stacked: true, yMax: portfolioMax });
+
   makeChart('chart-balance', 'line', series.years, both('balance'));
-  makeChart('chart-portfolio', 'line', series.years, both('portfolio'));
 }
 
 // ---------- main render ----------
