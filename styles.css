@@ -88,6 +88,8 @@ input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-v
 .card dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 0.9rem; }
 .card dt { color: var(--ink-2); }
 .card dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.card dl.calc .subtotal { color: var(--ink); font-weight: 600; border-top: 1px solid var(--line); padding-top: 3px; margin-bottom: 6px; }
+.card dl.facts { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 0.85rem; }
 .sanity { color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
 
 .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -110,3 +112,5 @@ th:first-child, td:first-child { text-align: left; }
   .loans, .cards, .charts { grid-template-columns: 1fr; }
   .canvas-box, .chart.wide .canvas-box { height: 260px; }
 }
+.advanced summary { cursor: pointer; font-weight: 600; padding: 2px 0; }
+.advanced[open] summary { margin-bottom: 8px; }

@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mortgage strategy comparison</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script type="module" src="app.js?v=4"></script>
+  <script type="module" src="app.js?v=6"></script>
 </head>
 <body>
 <header class="page-header">
@@ -29,20 +29,12 @@
     </div>
 
     <fieldset class="group">
-      <legend>Shared settings</legend>
+      <legend>Main settings</legend>
       <div class="grid">
         <label>House price ($)<input type="number" data-key="price" step="10000" min="10000"></label>
-        <label>Home appreciation (% / yr)<input type="number" data-key="appreciation" step="0.1"></label>
-        <label>Sell or stop at year (1-30)<input type="number" data-key="horizon" step="1" min="1" max="30"></label>
         <label>Investment return (% / yr)<input type="number" data-key="investReturn" step="0.1"></label>
-        <label>Tax on investment gains (%)<input type="number" data-key="gainsTax" step="0.1"></label>
-        <label>Selling costs (% of home value)<input type="number" data-key="sellingCost" step="0.1"></label>
-        <label>Marginal income tax rate (%)<input type="number" data-key="marginalRate" step="0.5"></label>
-        <label>Standard deduction ($)<input type="number" data-key="standardDeduction" step="100"></label>
-        <label>Other itemized deductions ($ / yr)<input type="number" data-key="otherItemized" step="500"></label>
-        <label>Deductible loan cap ($)<input type="number" data-key="loanCap" step="10000"></label>
-        <label>Conforming loan limit ($)<input type="number" data-key="conformingLimit" step="1000"></label>
-        <label class="check"><input type="checkbox" data-key="deduct"> Deduct mortgage interest</label>
+        <label>Sell or stop at year (1-30)<input type="number" data-key="horizon" step="1" min="1" max="30"></label>
+        <label>Home appreciation (% / yr)<input type="number" data-key="appreciation" step="0.1"></label>
       </div>
     </fieldset>
 
@@ -50,7 +42,6 @@
       <fieldset class="group loan-a" data-loan="A">
         <legend><span class="swatch swatch-a"></span>Loan A</legend>
         <div class="grid">
-          <label>Name<input type="text" data-key="loanA.label" maxlength="30"></label>
           <label>Down payment ($)<input type="number" data-key="loanA.down" step="10000" min="0"></label>
           <label>Term
             <select data-key="loanA.term"><option>15</option><option>20</option><option>30</option></select>
@@ -63,7 +54,6 @@
       <fieldset class="group loan-b" data-loan="B">
         <legend><span class="swatch swatch-b"></span>Loan B</legend>
         <div class="grid">
-          <label>Name<input type="text" data-key="loanB.label" maxlength="30"></label>
           <label>Down payment ($)<input type="number" data-key="loanB.down" step="10000" min="0"></label>
           <label>Term
             <select data-key="loanB.term"><option>15</option><option>20</option><option>30</option></select>
@@ -73,6 +63,22 @@
         <p class="loan-summary"><span class="badge" data-out="badgeB"></span> <span data-out="summaryB"></span></p>
       </fieldset>
     </div>
+
+    <details class="group advanced">
+      <summary>Advanced: taxes, selling costs, names</summary>
+      <div class="grid">
+        <label>Tax on investment gains (%)<input type="number" data-key="gainsTax" step="0.1"></label>
+        <label>Selling costs (% of home value)<input type="number" data-key="sellingCost" step="0.1"></label>
+        <label class="check"><input type="checkbox" data-key="deduct"> Deduct mortgage interest</label>
+        <label>Marginal income tax rate (%)<input type="number" data-key="marginalRate" step="0.5"></label>
+        <label>Standard deduction ($)<input type="number" data-key="standardDeduction" step="100"></label>
+        <label>Other itemized deductions ($ / yr)<input type="number" data-key="otherItemized" step="500"></label>
+        <label>Deductible loan cap ($)<input type="number" data-key="loanCap" step="10000"></label>
+        <label>Conforming loan limit ($)<input type="number" data-key="conformingLimit" step="1000"></label>
+        <label>Loan A name<input type="text" data-key="loanA.label" maxlength="30"></label>
+        <label>Loan B name<input type="text" data-key="loanB.label" maxlength="30"></label>
+      </div>
+    </details>
   </section>
 
   <section aria-labelledby="results-title">

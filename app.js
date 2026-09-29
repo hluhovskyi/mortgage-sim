@@ -1,10 +1,10 @@
 // app.js - wires the inputs, the calculation library and the charts together.
 // Flow: read inputs -> params -> simulate -> render text, cards, table, charts.
 
-import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=4';
+import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=6';
 import {
   FIELDS, paramsFromQuery, paramsToQuery, toModelParams, getPath, setPath, cleanValue,
-} from './lib/params.js?v=4';
+} from './lib/params.js?v=6';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -105,6 +105,31 @@ function renderVerdict(model, result) {
   return crossovers;
 }
 
+/**
+ * Net worth for one yearly snapshot, written out as a sum you can follow.
+ * Each line: [operator, label, dollars, isSubtotal]. The numbers add up top to bottom:
+ * home value - selling costs - loan payoff = home equity;
+ * investments - tax on gains = investments after tax; equity + investments = net worth.
+ * @param {object} row A yearly snapshot from simulate() (rows[year]).
+ * @param {object} model Model params (decimals), for the selling-cost and gains-tax rates.
+ * @returns {[string, string, number, boolean][]}
+ */
+function netWorthBreakdown(row, model) {
+  const sellingCosts = row.homeValue * model.sellingCost;
+  const gainsTax = row.portfolio - row.portfolioAfterTax;
+  const gains = Math.max(0, row.portfolio - row.contributions);
+  return [
+    ['', `Home value (year ${row.year})`, row.homeValue, false],
+    ['−', `Selling costs (${(model.sellingCost * 100).toFixed(1)}%)`, sellingCosts, false],
+    ['−', 'Pay off remaining loan', row.balance, false],
+    ['=', 'Home equity', row.homeEquity, true],
+    ['', 'Investments (before tax)', row.portfolio, false],
+    ['−', `Tax on gains (${(model.gainsTax * 100).toFixed(1)}% of ${money(gains)})`, gainsTax, false],
+    ['=', 'Investments after tax', row.portfolioAfterTax, true],
+    ['=', 'Net worth (equity + investments)', row.netWorth, true],
+  ];
+}
+
 function renderCards(model, result) {
   const cards = $('#cards');
   cards.replaceChildren();
@@ -113,18 +138,24 @@ function renderCards(model, result) {
     const f = s.final;
     const card = el('article', '', `card win-${id.toLowerCase()}`);
     card.append(el('h3', s.label), el('p', money(f.netWorth), 'big'));
-    const list = el('dl');
+
+    // The net worth math, line by line.
+    const calc = el('dl', '', 'calc');
+    for (const [op, label, value, isSubtotal] of netWorthBreakdown(f, model)) {
+      const cls = isSubtotal ? 'subtotal' : '';
+      calc.append(el('dt', `${op} ${label}`.trim(), cls), el('dd', money(value), cls));
+    }
+
+    // Other facts about the loan (already included in the math above).
+    const facts = el('dl', '', 'facts');
     const rows = [
-      ['Net worth', money(f.netWorth)],
-      ['Home equity (net of selling costs)', money(f.homeEquity)],
-      ['Portfolio after tax', money(f.portfolioAfterTax)],
       ['Total interest paid', money(f.cumInterest)],
       ['Total principal paid', money(f.cumPrincipal)],
-      ['Tax benefit from interest', money(f.cumBenefit)],
-      ['Remaining loan balance', money(f.balance)],
+      ['Tax benefit from interest (already in investments)', money(f.cumBenefit)],
+      ['Money put into investments', money(f.contributions)],
     ];
-    for (const [term, value] of rows) list.append(el('dt', term), el('dd', value));
-    card.append(list);
+    for (const [term, value] of rows) facts.append(el('dt', term), el('dd', value));
+    card.append(calc, facts);
     cards.append(card);
   }
   const cashA = result.A.final.cashSpent, cashB = result.B.final.cashSpent;
@@ -194,7 +225,7 @@ function crossoverPlugin(crossovers, labels) {
  * @param {object[]} datasets Chart.js datasets.
  * @param {object} [extra] Extra options: stacked (bool), plugins (array).
  */
-function makeChart(canvasId, type, years, datasets, { stacked = false, plugins = [], yMax, hideLegend = false } = {}) {
+function makeChart(canvasId, type, years, datasets, { stacked = false, plugins = [], yMax, hideLegend = false, afterLabel } = {}) {
   const ink = cssVar('--ink-2'), grid = cssVar('--grid');
   const chart = new Chart(document.getElementById(canvasId), {
     type,
@@ -213,6 +244,8 @@ function makeChart(canvasId, type, years, datasets, { stacked = false, plugins =
           callbacks: {
             title: (items) => `Year ${items[0].label}`,
             label: (item) => `${item.dataset.label}: ${money(item.parsed.y)}`,
+            // Optional extra lines under each value (used for the net worth breakdown).
+            ...(afterLabel && { afterLabel: (item) => afterLabel(item.datasetIndex, item.dataIndex) }),
           },
         },
       },
@@ -244,7 +277,7 @@ function portfolioSets(series, loanColor) {
   ];
 }
 
-function renderCharts(result, crossovers) {
+function renderCharts(result, crossovers, model) {
   charts.splice(0).forEach((c) => c.destroy());
   const { series } = result;
   const colorA = cssVar('--a'), colorB = cssVar('--b');
@@ -252,8 +285,14 @@ function renderCharts(result, crossovers) {
   const both = (key) => [lineSet(a, series.A[key], colorA), lineSet(b, series.B[key], colorB)];
   const yearsFrom1 = series.years.slice(1);
 
+  // Hovering a year shows how each net worth is built (same math as the result cards).
+  const breakdownLines = (datasetIndex, year) => {
+    const row = (datasetIndex === 0 ? result.A : result.B).rows[year];
+    return netWorthBreakdown(row, model).slice(0, -1)
+      .map(([op, label, value]) => `   ${op || '+'} ${label}: ${money(value)}`);
+  };
   makeChart('chart-networth', 'line', series.years, both('netWorth'),
-    { plugins: [crossoverPlugin(crossovers, { A: a, B: b })] });
+    { plugins: [crossoverPlugin(crossovers, { A: a, B: b })], afterLabel: breakdownLines });
 
   // Net worth gap per year: above zero means B is ahead, below zero means A is ahead.
   // Bars take the color of whoever leads that year.
@@ -291,14 +330,14 @@ function render() {
   const crossovers = renderVerdict(model, result);
   renderCards(model, result);
   renderTable(result);
-  renderCharts(result, crossovers);
-  lastResult = { result, crossovers };
+  renderCharts(result, crossovers, model);
+  lastResult = { result, crossovers, model };
 }
 
 let lastResult = null;
 // Re-draw charts when the OS theme changes so colors match.
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  if (lastResult) renderCharts(lastResult.result, lastResult.crossovers);
+  if (lastResult) renderCharts(lastResult.result, lastResult.crossovers, lastResult.model);
 });
 
 writeInputs();
