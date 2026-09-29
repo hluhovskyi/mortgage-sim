@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mortgage strategy comparison</title>
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script type="module" src="app.js?v=9"></script>
+  <script type="module" src="app.js?v=10"></script>
 </head>
 <body>
 <header class="page-header">
@@ -98,13 +98,13 @@
   <section aria-labelledby="charts-title">
     <h2 id="charts-title">Charts</h2>
     <div class="charts">
-      <figure class="chart wide"><figcaption>Net worth if sold that year</figcaption><div class="canvas-box"><canvas id="chart-networth" role="img" aria-label="Net worth over time for both loans"></canvas></div></figure>
-      <figure class="chart wide"><figcaption id="cap-gap">Net worth difference, B minus A</figcaption><div class="canvas-box"><canvas id="chart-gap" role="img" aria-label="Yearly net worth difference between the two loans"></canvas></div></figure>
-      <figure class="chart"><figcaption id="cap-split-a">Yearly payment split, Loan A</figcaption><div class="canvas-box"><canvas id="chart-split-a" role="img" aria-label="Yearly principal and interest for loan A"></canvas></div></figure>
-      <figure class="chart"><figcaption id="cap-split-b">Yearly payment split, Loan B</figcaption><div class="canvas-box"><canvas id="chart-split-b" role="img" aria-label="Yearly principal and interest for loan B"></canvas></div></figure>
-      <figure class="chart"><figcaption id="cap-port-a">Investments, Loan A: money put in vs growth</figcaption><div class="canvas-box"><canvas id="chart-port-a" role="img" aria-label="Loan A investments: money put in and growth"></canvas></div></figure>
-      <figure class="chart"><figcaption id="cap-port-b">Investments, Loan B: money put in vs growth</figcaption><div class="canvas-box"><canvas id="chart-port-b" role="img" aria-label="Loan B investments: money put in and growth"></canvas></div></figure>
-      <figure class="chart wide"><figcaption>Loan balance</figcaption><div class="canvas-box"><canvas id="chart-balance" role="img" aria-label="Loan balance over time"></canvas></div></figure>
+      <figure class="chart wide"><figcaption>Net worth if sold that year</figcaption><p class="chart-totals" id="tot-networth"></p><div class="canvas-box"><canvas id="chart-networth" role="img" aria-label="Net worth over time for both loans"></canvas></div></figure>
+      <figure class="chart wide"><figcaption id="cap-gap">Net worth difference, B minus A</figcaption><p class="chart-totals" id="tot-gap"></p><div class="canvas-box"><canvas id="chart-gap" role="img" aria-label="Yearly net worth difference between the two loans"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-split-a">Yearly payment split, Loan A</figcaption><p class="chart-totals" id="tot-split-a"></p><div class="canvas-box"><canvas id="chart-split-a" role="img" aria-label="Yearly principal and interest for loan A"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-split-b">Yearly payment split, Loan B</figcaption><p class="chart-totals" id="tot-split-b"></p><div class="canvas-box"><canvas id="chart-split-b" role="img" aria-label="Yearly principal and interest for loan B"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-port-a">Investments, Loan A: money put in vs growth</figcaption><p class="chart-totals" id="tot-port-a"></p><div class="canvas-box"><canvas id="chart-port-a" role="img" aria-label="Loan A investments: money put in and growth"></canvas></div></figure>
+      <figure class="chart"><figcaption id="cap-port-b">Investments, Loan B: money put in vs growth</figcaption><p class="chart-totals" id="tot-port-b"></p><div class="canvas-box"><canvas id="chart-port-b" role="img" aria-label="Loan B investments: money put in and growth"></canvas></div></figure>
+      <figure class="chart wide"><figcaption>Loan balance</figcaption><p class="chart-totals" id="tot-balance"></p><div class="canvas-box"><canvas id="chart-balance" role="img" aria-label="Loan balance over time"></canvas></div></figure>
     </div>
   </section>
 

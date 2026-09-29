@@ -1,10 +1,10 @@
 // app.js - wires the inputs, the calculation library and the charts together.
 // Flow: read inputs -> params -> simulate -> render text, cards, table, charts.
 
-import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=9';
+import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=10';
 import {
   FIELDS, paramsFromQuery, paramsToQuery, toModelParams, getPath, setPath, cleanValue,
-} from './lib/params.js?v=9';
+} from './lib/params.js?v=10';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -347,6 +347,47 @@ function renderCharts(result, crossovers, model) {
   makeChart('chart-port-b', 'bar', series.years, portfolioSets(series.B, colorB), { stacked: true, yMax: portfolioMax });
 
   makeChart('chart-balance', 'line', series.years, both('balance'));
+
+  renderChartTotals(result);
+}
+
+/**
+ * One line of totals under each chart title, so the key numbers don't need hovering.
+ * Totals are "at the horizon" (the sell or stop year), same as the result cards.
+ */
+function renderChartTotals(result) {
+  const A = result.A, B = result.B;
+  const set = (id, parts) => { $(id).textContent = parts.join('  ·  '); };
+  const lastYear = A.rows.length - 1;
+
+  set('#tot-networth', [`${A.label}: ${money(A.final.netWorth)}`, `${B.label}: ${money(B.final.netWorth)}`]);
+
+  const gap = B.final.netWorth - A.final.netWorth;
+  const leader = gap >= 0 ? B.label : A.label;
+  set('#tot-gap', [`Year ${lastYear}: ${leader} ahead by ${money(Math.abs(gap))}`]);
+
+  for (const [id, s] of [['a', A], ['b', B]]) {
+    const paid = s.final.cumPrincipal + s.final.cumInterest;
+    const interestShare = paid > 0 ? Math.round((s.final.cumInterest / paid) * 100) : 0;
+    set(`#tot-split-${id}`, [
+      `Principal ${money(s.final.cumPrincipal)}`,
+      `Interest ${money(s.final.cumInterest)}`,
+      `Total paid ${money(paid)} (${interestShare}% interest)`,
+    ]);
+    const growth = Math.max(0, s.final.portfolio - s.final.contributions);
+    set(`#tot-port-${id}`, [
+      `Put in ${money(s.final.contributions)}`,
+      `Growth ${money(growth)}`,
+      `Total ${money(s.final.portfolio)} (${money(s.final.portfolioAfterTax)} after tax)`,
+    ]);
+  }
+
+  // Payoff year = first year the balance hits zero (if it does before the horizon).
+  const payoff = (s) => {
+    const year = s.rows.findIndex((row, i) => i > 0 && row.balance === 0);
+    return year === -1 ? `${money(s.final.balance)} left at year ${lastYear}` : `paid off in year ${year}`;
+  };
+  set('#tot-balance', [`${A.label}: ${payoff(A)}`, `${B.label}: ${payoff(B)}`]);
 }
 
 // ---------- main render ----------

@@ -119,3 +119,4 @@ th:first-child, td:first-child { text-align: left; }
 .advanced .sub h3 { margin: 0 0 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
 .advanced label.check { align-self: auto; padding: 0 0 10px; }
 .grid label > input, .grid label > select { margin-top: auto; }
+.chart-totals { margin: 2px 0 8px; font-size: 0.82rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
