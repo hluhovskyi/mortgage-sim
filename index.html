@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mortgage strategy comparison</title>
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script type="module" src="app.js?v=8"></script>
+  <script type="module" src="app.js?v=9"></script>
 </head>
 <body>
 <header class="page-header">
@@ -43,6 +43,7 @@
         <legend><span class="swatch swatch-a"></span>Loan A</legend>
         <div class="grid">
           <label>Down payment ($)<input type="number" data-key="loanA.down" step="10000" min="0"></label>
+          <label>Down payment (%)<input type="number" data-down-pct="A" step="1" min="0" max="100"></label>
           <label>Term (years)<input type="number" data-key="loanA.term" step="1" min="1" max="40"></label>
           <label>Interest rate (%)<input type="number" data-key="loanA.rate" step="0.125" min="0"></label>
         </div>
@@ -53,6 +54,7 @@
         <legend><span class="swatch swatch-b"></span>Loan B</legend>
         <div class="grid">
           <label>Down payment ($)<input type="number" data-key="loanB.down" step="10000" min="0"></label>
+          <label>Down payment (%)<input type="number" data-down-pct="B" step="1" min="0" max="100"></label>
           <label>Term (years)<input type="number" data-key="loanB.term" step="1" min="1" max="40"></label>
           <label>Interest rate (%)<input type="number" data-key="loanB.rate" step="0.125" min="0"></label>
         </div>

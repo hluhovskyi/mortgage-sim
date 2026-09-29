@@ -1,10 +1,10 @@
 // app.js - wires the inputs, the calculation library and the charts together.
 // Flow: read inputs -> params -> simulate -> render text, cards, table, charts.
 
-import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=8';
+import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=9';
 import {
   FIELDS, paramsFromQuery, paramsToQuery, toModelParams, getPath, setPath, cleanValue,
-} from './lib/params.js?v=8';
+} from './lib/params.js?v=9';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -49,6 +49,34 @@ for (const input of document.querySelectorAll('[data-key]')) {
   input.addEventListener('input', handler);
   // After leaving a box, show the cleaned (clamped) value.
   input.addEventListener('change', () => { writeInputs(); });
+}
+
+// ---------- down payment % boxes ----------
+// The URL and the model store the down payment in dollars. Each "%" box is a
+// second view of that same number: typing a % sets dollars = price × % / 100,
+// and any change to dollars or price refreshes the % shown.
+
+/** Show each loan's down payment as a % of the price (skips the box being typed in). */
+function writeDownPercents() {
+  for (const id of ['A', 'B']) {
+    const box = document.querySelector(`[data-down-pct="${id}"]`);
+    if (document.activeElement === box) continue;
+    const down = params[`loan${id}`].down;
+    box.value = params.price > 0 ? +(down / params.price * 100).toFixed(2) : 0;
+  }
+}
+
+for (const box of document.querySelectorAll('[data-down-pct]')) {
+  const id = box.dataset.downPct;
+  box.addEventListener('input', () => {
+    const pct = Number(box.value);
+    if (box.value === '' || !Number.isFinite(pct)) return;
+    const clamped = Math.min(100, Math.max(0, pct));
+    params[`loan${id}`].down = Math.round(params.price * clamped / 100);
+    document.querySelector(`[data-key="loan${id}.down"]`).value = params[`loan${id}`].down;
+    render();
+  });
+  box.addEventListener('change', writeDownPercents);
 }
 
 $('#copy-link').addEventListener('click', async () => {
@@ -323,6 +351,7 @@ function renderCharts(result, crossovers, model) {
 
 // ---------- main render ----------
 function render() {
+  writeDownPercents();
   history.replaceState(null, '', '?' + paramsToQuery(params));
   const model = toModelParams(params);
   const result = simulate(model);
