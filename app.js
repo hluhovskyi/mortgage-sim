@@ -246,6 +246,15 @@ function renderCharts(result, crossovers) {
   makeChart('chart-networth', 'line', series.years, both('netWorth'),
     { plugins: [crossoverPlugin(crossovers, { A: a, B: b })] });
 
+  // Net worth gap per year: above zero means B is ahead, below zero means A is ahead.
+  // Bars take the color of whoever leads that year.
+  const gap = series.B.netWorth.map((nb, i) => nb - series.A.netWorth[i]);
+  $('#cap-gap').textContent = `Net worth difference, ${b} minus ${a} (above 0 = ${b} ahead)`;
+  makeChart('chart-gap', 'bar', series.years, [{
+    label: `${b} minus ${a}`, data: gap, borderRadius: 0,
+    backgroundColor: gap.map((d) => (d >= 0 ? colorB : colorA)),
+  }], { plugins: [crossoverPlugin(crossovers, { A: a, B: b })] });
+
   // Both split charts share one y-axis maximum so the bars are comparable.
   const yearlyTotal = (s) => Math.max(...s.yearPrincipal.map((p, i) => p + s.yearInterest[i]));
   const sharedMax = Math.max(yearlyTotal(series.A), yearlyTotal(series.B)) * 1.05;
