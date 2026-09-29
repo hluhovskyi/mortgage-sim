@@ -34,7 +34,7 @@ Unknown keys are ignored; invalid values fall back to the default; numbers are c
 |---|---|---|---|
 | `p` | House price, $ | 1000000 | 10,000 - 100,000,000 |
 | `g` | Home appreciation, % / yr | 3 | -10 - 20 |
-| `y` | Horizon (sell or stop at year) | 30 | 1 - 30 (whole years) |
+| `y` | Horizon (sell or stop at year) | 30 | 1 - 40 (whole years) |
 | `r` | Investment return, % / yr, nominal | 7 | -20 - 40 |
 | `gt` | Tax on investment gains, % | 23.8 | 0 - 60 |
 | `sc` | Selling costs, % of home value | 7 | 0 - 30 |
@@ -46,7 +46,7 @@ Unknown keys are ignored; invalid values fall back to the default; numbers are c
 | `cl` | Conforming loan limit, $ (label only) | 832750 | 0 - 100,000,000 |
 | `al` / `bl` | Loan A / B label (max 30 chars) | Loan A / Loan B | text |
 | `ad` / `bd` | Loan A / B down payment, $ (capped at price) | 400000 / 100000 | 0 - 100,000,000 |
-| `at` / `bt` | Loan A / B term, years | 15 / 30 | 15, 20 or 30 |
+| `at` / `bt` | Loan A / B term, years | 15 / 30 | 1 - 40 |
 | `ar` / `br` | Loan A / B interest rate, % | 6 / 6.75 | 0 - 25 |
 
 ## Model

@@ -114,3 +114,8 @@ th:first-child, td:first-child { text-align: left; }
 }
 .advanced summary { cursor: pointer; font-weight: 600; padding: 2px 0; }
 .advanced[open] summary { margin-bottom: 8px; }
+/* Advanced section: two titled sub-groups; inputs line up even if a label wraps. */
+.advanced .sub + .sub { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.advanced .sub h3 { margin: 0 0 8px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+.advanced label.check { align-self: auto; padding: 0 0 10px; }
+.grid label > input, .grid label > select { margin-top: auto; }

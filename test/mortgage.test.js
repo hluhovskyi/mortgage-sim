@@ -109,10 +109,11 @@ test('URL params round-trip', () => {
 });
 
 test('URL params: clamps, ignores unknown keys and bad values', () => {
-  const p = paramsFromQuery('?y=99&mt=abc&at=17&zzz=5&sc=-4');
-  assert.equal(p.horizon, 30);
+  const p = paramsFromQuery('?y=99&mt=abc&at=99&bt=x&zzz=5&sc=-4');
+  assert.equal(p.horizon, 40);
   assert.equal(p.marginalRate, DEFAULTS.marginalRate);
-  assert.equal(p.loanA.term, DEFAULTS.loanA.term);
+  assert.equal(p.loanA.term, 40);
+  assert.equal(p.loanB.term, DEFAULTS.loanB.term);
   assert.equal(p.sellingCost, 0);
   assert.equal('zzz' in p, false);
 });
