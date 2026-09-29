@@ -1,10 +1,10 @@
 // app.js - wires the inputs, the calculation library and the charts together.
 // Flow: read inputs -> params -> simulate -> render text, cards, table, charts.
 
-import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js';
+import { simulate, findCrossovers, breakEvenReturn, netWorthGap } from './lib/mortgage.js?v=4';
 import {
   FIELDS, paramsFromQuery, paramsToQuery, toModelParams, getPath, setPath, cleanValue,
-} from './lib/params.js';
+} from './lib/params.js?v=4';
 
 const $ = (selector) => document.querySelector(selector);
 
